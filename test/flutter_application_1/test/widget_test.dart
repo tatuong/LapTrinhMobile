@@ -1,30 +1,34 @@
-// This is a basic Flutter widget test.
-//
-// To perform an interaction with a widget in your test, use the WidgetTester
-// utility in the flutter_test package. For example, you can send tap and scroll
-// gestures. You can also use WidgetTester to find child widgets in the widget
-// tree, read text, and verify that the values of widget properties are correct.
-
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_application_1/main.dart';
+import 'package:flutter_application_1/main.dart'; // nhớ sửa đường dẫn nếu app của bạn đổi tên
 
 void main() {
-  testWidgets('Counter increments smoke test', (WidgetTester tester) async {
-    // Build our app and trigger a frame.
-    await tester.pumpWidget(const MyApp());
+  testWidgets('Dinosaur Game basic tap test', (WidgetTester tester) async {
+    // Build our Dinosaur game app and trigger a frame
+    await tester.pumpWidget(const DinosaurGame());
 
-    // Verify that our counter starts at 0.
-    expect(find.text('0'), findsOneWidget);
-    expect(find.text('1'), findsNothing);
+    // Verify that the game starts without "Game Over" text
+    expect(find.textContaining('Game Over'), findsNothing);
 
-    // Tap the '+' icon and trigger a frame.
-    await tester.tap(find.byIcon(Icons.add));
+    // Tap to make dinosaur jump
+    await tester.tap(find.byType(GestureDetector));
     await tester.pump();
 
-    // Verify that our counter has incremented.
-    expect(find.text('0'), findsNothing);
-    expect(find.text('1'), findsOneWidget);
+    // After tap, still no "Game Over" immediately
+    expect(find.textContaining('Game Over'), findsNothing);
+
+    // Simulate time passing to let dinosaur fall down and possibly hit obstacle
+    await tester.pump(const Duration(seconds: 5));
+
+    // Now there is a chance the game is over
+    expect(find.textContaining('Game Over'), findsOneWidget);
+
+    // Tap again to restart game
+    await tester.tap(find.byType(GestureDetector));
+    await tester.pump();
+
+    // After restart, "Game Over" should disappear
+    expect(find.textContaining('Game Over'), findsNothing);
   });
 }
